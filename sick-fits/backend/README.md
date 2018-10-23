@@ -18,3 +18,12 @@ A GraphQL Database Interface
 - Data Relationships
 - Queried Directl from the Yoga Server
 - Self-hosted or as-a-service
+
+### Steps to add items to the db
+Watch video 13.
+
+### Generated files
+prisma.graphql is a generated file that regenerates every time we update or add models to the datamodel.prisma file.
+
+### Importing models into Schema
+GraphQL doesn't have imports, we get these via Prisma and the imports have to be added as comments (with the '#' as the comment field)
