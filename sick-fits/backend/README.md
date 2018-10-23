@@ -20,7 +20,12 @@ A GraphQL Database Interface
 - Self-hosted or as-a-service
 
 ### Steps to add items to the db
-Watch video 13.
+Watch video 14.
+When we want to add a new Type, we add that to the datamodel.prisma file
+Run deploy to push that up to the Prisma service
+That brings down a new copy of our prisma.graphql containing all queries, filters, mutations
+Then we go into our schema.graphql (the public facing API that the React front end will interface with) and add the ability to create new stuff (Mutations) and get the stuff (Query)
+THen go into the Mutations and Queries and write the resolvers to handle all the data manipulations.
 
 ### Generated files
 prisma.graphql is a generated file that regenerates every time we update or add models to the datamodel.prisma file.
