@@ -12,7 +12,7 @@ const CREATE_ITEM_MUTATION = gql`
     $description: String!
     $price: Int!
     $image: String
-    $largeImage: String 
+    $largeImage: String
   ) {
     createItem(
       title: $title
@@ -28,11 +28,11 @@ const CREATE_ITEM_MUTATION = gql`
 
 class CreateItem extends Component {
   state = {
-    title: 'Cool Shoes',
-    description: 'I love those!',
-    image: 'dog.jpg',
-    largeImage: 'large-dog.jpg',
-    price: 1000,
+    title: '',
+    description: '',
+    image: '',
+    largeImage: '',
+    price: 0,
   };
   handleChange = e => {
     const { name, type, value } = e.target;
@@ -59,59 +59,61 @@ class CreateItem extends Component {
     return (
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
         {(createItem, { loading, error }) => (
-        <Form 
+        <Form
           onSubmit={ async e => {
             e.preventDefault();
             const res = await createItem();
-            console.log('res:', res)
-            
+            Router.push({
+              pathname: '/item',
+              query: { id: res.data.createItem.id},
+            });
           }}
         >
           <Error error={error} />
           <fieldset disabled={loading} aria-busy={loading}>
             <label htmlFor="file">
               Image
-              <input 
-                type="file" 
-                id="file" 
-                name="file" 
-                placeholder="Upload an image" 
+              <input
+                type="file"
+                id="file"
+                name="file"
+                placeholder="Upload an image"
                 required
-                onChange={this.uploadFile} 
+                onChange={this.uploadFile}
               />
               { this.state.image && <img src={this.state.image} width="200"alt="Upload Preview"/>}
             </label>
             <label htmlFor="title">
               Title
-              <input 
-                type="text" 
-                id="title" 
-                name="title" 
-                placeholder="Title" 
-                required 
-                value={this.state.title} 
-                onChange={this.handleChange} 
+              <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Title"
+                required
+                value={this.state.title}
+                onChange={this.handleChange}
               />
             </label>
             <label htmlFor="price">
               Price
-              <input 
-                type="number" 
-                id="price" 
-                name="price" 
-                placeholder="Price" 
-                required 
-                value={this.state.price} 
+              <input
+                type="number"
+                id="price"
+                name="price"
+                placeholder="Price"
+                required
+                value={this.state.price}
                 onChange={this.handleChange} />
             </label>
             <label htmlFor="description">
               Description
-              <textarea 
-                id="description" 
-                name="description" 
-                placeholder="Enter A Description" 
-                required 
-                value={this.state.description} 
+              <textarea
+                id="description"
+                name="description"
+                placeholder="Enter A Description"
+                required
+                value={this.state.description}
                 onChange={this.handleChange} />
             </label>
             <button type="submit">Submit</button>
