@@ -23,7 +23,7 @@ const ItemsList = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 60px;
-  max-widthL ${props => props.theme.maxWidth};
+  max-width: ${props => props.theme.maxWidth};
   margin: 0 auto;
 `;
 
