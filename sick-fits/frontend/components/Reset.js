@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
+import Router from 'next/router';
 import Form from './styles/Form';
 import Error from './ErrorMessage';
 import { CURRENT_USER_QUERY } from './User';
@@ -42,8 +43,11 @@ class Reset extends Component {
         {(reset, { error, loading, called }) => (
           <Form method="post" onSubmit={ async e => {
             e.preventDefault();
-            await reset();
+            const result = await reset();
             this.setState({ password: '', confirmPassword: '' });
+            Router.push({
+              pathname: '/items',
+            });
           }}>
             <fieldset disabled={loading} aria-busy={loading}>
               <h2>Reset Your Password</h2>
