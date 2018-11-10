@@ -45,9 +45,12 @@ class Reset extends Component {
             e.preventDefault();
             const result = await reset();
             this.setState({ password: '', confirmPassword: '' });
+            if (!result) {
+              console.log('Oops, something went wrong!')
+            }
             Router.push({
-              pathname: '/items',
-            });
+                pathname: '/items',
+              });
           }}>
             <fieldset disabled={loading} aria-busy={loading}>
               <h2>Reset Your Password</h2>
