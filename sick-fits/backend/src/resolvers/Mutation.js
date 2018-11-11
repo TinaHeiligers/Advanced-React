@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto'); //built in node module
 const { promisify } = require('util');// built in node module
 const { transport, makeANiceEmail } = require('../mail');
+const { hasPermission } = require('../utils');
 
 const Mutations = {
   async createItem(parent, args, ctx, info) {
@@ -156,7 +157,32 @@ const Mutations = {
     // return user
     return updatedUser;
     //
-  }
+  },
+  async updatePermissions(parent, args, ctx, info) {
+    // check if they are logged in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in to do this')
+    }
+    // query the current user
+    const currentUser = await ctx.db.query.user({
+      where: {
+        id: ctx.request.userId,
+      },
+    }, info);
+    // check that the current user has permission to update permissions
+    hasPermission(currentUser, ['ADMIN', 'PERMISSIONUPDATE']);
+    // update the permissions
+    return ctx.db.mutation.updateUser({
+      data: {
+        permissions: {
+          set: args.permissions,
+        },
+      },
+      where: {
+        id: args.userId,
+      },
+    }, info)
+  },
 };
 
 module.exports = Mutations;
