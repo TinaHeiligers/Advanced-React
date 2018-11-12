@@ -24,14 +24,34 @@ const BigButton = styled.button`
 `;
 
 class RemoveFromCart extends Component {
-  static PropTypes = {
+  static propTypes = {
     id: PropTypes.string.isRequired
+  };
+  // this gets called as soon as we get a response from the server after the mutation has been performed
+  update = (cache, payload) => {
+    // read the cache
+    console.log("Running remove from cart update fn");
+    const data = cache.readQuery({ query: CURRENT_USER_QUERY });
+    console.log(data);
+    // remove that item from teh cart
+    const cartItemId = payload.data.removeFromCart.id;
+    data.me.cart = data.me.cart.filter(cartItem => cartItem.id !== cartItemId);
+    // write it back to the cart
+    cache.writeQuery({ query: CURRENT_USER_QUERY, data });
   };
   render() {
     return (
       <Mutation
         mutation={REMOVE_FROM_CART_MUTATION}
         variables={{ id: this.props.id }}
+        update={this.update}
+        optimisticResponse={{
+          __typename: "Mutation",
+          removeFromCart: {
+            __typename: "CartItem",
+            id: this.props.id
+          }
+        }}
       >
         {(removeFromCart, { loading, error }) => (
           <BigButton
