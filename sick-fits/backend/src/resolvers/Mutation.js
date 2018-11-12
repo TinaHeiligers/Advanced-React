@@ -233,6 +233,30 @@ const Mutations = {
         }
       }
     });
+  },
+  async removeFromCart(parent, args, ctx, info) {
+    // 1. Find the cart item
+    const cartItem = await ctx.db.query.cartItem(
+      {
+        where: {
+          id: args.id
+        }
+      },
+      `{ id, user { id }}`
+    );
+    // 2 Make sure we found the item (it hasn't been deleted from the db!)
+    if (!cartItem) throw new Error("The item no longer exists");
+    // 3. Make sure the current user owns that cart item
+    if (cartItem.user.id !== ctx.request.userId)
+      throw new Error("Cheatin ain't nice!");
+    // 4. delete the cart item
+    return ctx.db.mutation.deleteCartItem(
+      {
+        where: { id: args.id }
+      },
+      info
+    );
+    // ??? what about just decrementing a cart item?
   }
 };
 
