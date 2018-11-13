@@ -251,7 +251,7 @@ export type CartItemWhereUniqueInput = AtLeastOne<{
 
 export interface CartItemUpdateWithoutUserDataInput {
   quantity?: Int;
-  item?: ItemUpdateOneRequiredInput;
+  item?: ItemUpdateOneInput;
 }
 
 export interface UserUpdateOneRequiredInput {
@@ -393,7 +393,7 @@ export interface CartItemSubscriptionWhereInput {
 
 export interface CartItemCreateInput {
   quantity?: Int;
-  item: ItemCreateOneInput;
+  item?: ItemCreateOneInput;
   user: UserCreateOneWithoutCartInput;
 }
 
@@ -565,7 +565,7 @@ export interface UserUpdateInput {
 
 export interface CartItemCreateWithoutUserInput {
   quantity?: Int;
-  item: ItemCreateOneInput;
+  item?: ItemCreateOneInput;
 }
 
 export interface UserUpdateWithoutCartDataInput {
@@ -601,16 +601,18 @@ export interface ItemUpdateDataInput {
   user?: UserUpdateOneRequiredInput;
 }
 
-export interface ItemUpdateOneRequiredInput {
+export interface ItemUpdateOneInput {
   create?: ItemCreateInput;
   update?: ItemUpdateDataInput;
   upsert?: ItemUpsertNestedInput;
+  delete?: Boolean;
+  disconnect?: Boolean;
   connect?: ItemWhereUniqueInput;
 }
 
 export interface CartItemUpdateInput {
   quantity?: Int;
-  item?: ItemUpdateOneRequiredInput;
+  item?: ItemUpdateOneInput;
   user?: UserUpdateOneRequiredWithoutCartInput;
 }
 
