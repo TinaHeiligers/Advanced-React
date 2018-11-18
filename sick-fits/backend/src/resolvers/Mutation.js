@@ -6,6 +6,7 @@ const { randomBytes } = require("crypto"); //built in node module
 const { promisify } = require("util"); // built in node module
 const { transport, makeANiceEmail } = require("../mail");
 const { hasPermission } = require("../utils");
+const stripe = require("../stripe");
 
 const Mutations = {
   async createItem(parent, args, ctx, info) {
@@ -257,6 +258,42 @@ const Mutations = {
       info
     );
     // ??? what about just decrementing a cart item?
+  },
+
+  async createOrder(parent, args, ctx, info) {
+    // 1. query the current user and check they're logged in
+    const { userId } = ctx.request;
+    if (!userId)
+      throw new Error("You must be logged in to complete this order.");
+    const user = await ctx.db.query.user(
+      { where: { id: userId } },
+      `{
+        id
+        name
+        email
+        cart {
+          id
+          quantity
+          item { title price id description image }
+        }}`
+    );
+    // 2. recalculate the order total price (to bypass any front-end hacking)
+    const amount = user.cart.reduce(
+      (total, cartItem) => total + cartItem.item.price * cartItem.quantity,
+      0
+    );
+    console.log(`Going to charge for a total of ${amount}`);
+    // 3. Create the stripe charge
+    const charge = await stripe.charges.create({
+      amount,
+      currency: "USD",
+      source: args.token
+      // can add a description -> look at the stripe docs
+    });
+    // 4. Convert the CartItems to OrderItems
+    // 5. Create the Order
+    // 6. Clean up - clear the user's cart, delete cartItems
+    // 7. Return the Order to the client
   }
 };
 
