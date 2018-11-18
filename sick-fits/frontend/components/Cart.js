@@ -10,6 +10,7 @@ import SickButton from "./styles/SickButton";
 import CartItem from "./CartItem";
 import calcTotalPrice from "../lib/calcTotalPrice";
 import formatMoney from "../lib/formatMoney";
+import TakeMyMoney from "./TakeMyMoney";
 // using the @client directive tells apollo that this is local and we're not going to the server for this
 const LOCAL_STATE_QUERY = gql`
   query {
@@ -58,7 +59,9 @@ const Cart = props => (
           </ul>
           <footer>
             <p>{formatMoney(calcTotalPrice(me.cart))}</p>
-            <SickButton>Checkout</SickButton>
+            <TakeMyMoney>
+              <SickButton>Checkout</SickButton>
+            </TakeMyMoney>
           </footer>
         </CartStyles>
       );
