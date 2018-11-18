@@ -1,19 +1,46 @@
 import React, { Component } from "react";
-import StripCheckout from "react-stripe-checkout";
+import StripeCheckout from "react-stripe-checkout";
 import { Mutation } from "react-apollo";
 import Router from "next/router";
 import NProgress from "nprogress";
 import PropTypes from "prop-types";
 import gql from "graphql-tag";
-import CalcTotalPrice from "../lib/calcTotalPrice";
+import calcTotalPrice from "../lib/calcTotalPrice";
 import Error from "./ErrorMessage";
 import User, { CURRENT_USER_QUERY } from "./User";
 
+function totalItems(cart) {
+  return cart.reduce(
+    (totalItemsCount, item) => totalItemsCount + item.quantity,
+    0
+  );
+}
+
 class TakeMyMoney extends Component {
+  onToken = res => {
+    console.log("On Token Called!");
+    console.log("The token id is:", res.id);
+  };
   render() {
-    return <User>{({ data: { me } }) => <p>{this.props.children}</p>}</User>;
+    return (
+      <User>
+        {({ data: { me } }) => (
+          <StripeCheckout
+            amount={calcTotalPrice(me.cart)}
+            name="Sick Fits"
+            description={`Order of ${totalItems(me.cart)} items!`}
+            image={me.cart[0] ? me.cart[0].item.image : ""}
+            stripeKey="pk_test_naavE7esRrtz5bdl1H12dkxE"
+            currency="USD"
+            email={me.email}
+            token={res => this.onToken(res)}
+          >
+            {this.props.children}
+          </StripeCheckout>
+        )}
+      </User>
+    );
   }
 }
 
 export default TakeMyMoney;
-// const publicKey = pk_test_naavE7esRrtz5bdl1H12dkxE;
