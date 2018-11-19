@@ -2,7 +2,7 @@
 // The database is on the context, refered to in here as ctx.
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { randomBytes } = require("crypto"); //built in node module
+const { randomBytes } = require("crypto"); // built in node module
 const { promisify } = require("util"); // built in node module
 const { transport, makeANiceEmail } = require("../mail");
 const { hasPermission } = require("../utils");
@@ -10,7 +10,7 @@ const stripe = require("../stripe");
 
 const Mutations = {
   async createItem(parent, args, ctx, info) {
-    //TODO Check if they are logged in
+    // TODO Check if they are logged in
     if (!ctx.request.userId) {
       throw new Error("You must be logged in to do that!");
     }
@@ -101,11 +101,13 @@ const Mutations = {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 365
     });
+    console.log("info", info);
     // 5. return the user
     return user;
   },
   signout(parent, args, ctx, info) {
     ctx.response.clearCookie("token");
+    console.log("info", info);
     return { message: "Goodbye!" };
   },
   async requestReset(parent, args, ctx, info) {
@@ -117,11 +119,12 @@ const Mutations = {
     // 2. set a reset token & expiry on that user
     const randomBytesPromisified = promisify(randomBytes);
     const resetToken = (await randomBytesPromisified(20)).toString("hex");
-    const resetTokenExpiry = Date.now() + 3600000; //1 hour
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
     const res = await ctx.db.mutation.updateUser({
       where: { email: args.email },
       data: { resetToken, resetTokenExpiry }
     });
+    console.log("res:", res);
     // 3. email the user the token
     const mailRes = await transport.sendMail({
       from: "tina.heiligers@gmail.com",
@@ -133,6 +136,8 @@ const Mutations = {
          process.env.FRONTEND_URL
        }/reset?resetToken=${resetToken}">Click Here to Reset</a>`)
     });
+    console.log("mailRes:", mailRes);
+    console.log("info", info);
     return { message: "Thanks!" };
   },
   async resetPassword(parent, args, ctx, info) {
@@ -165,6 +170,7 @@ const Mutations = {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
+    console.log("info", info);
     // return user
     return updatedUser;
     //
@@ -215,7 +221,7 @@ const Mutations = {
     });
     // check if the user already has the item in their cart and increment by 1 if it is
     if (existingCartItem) {
-      return await ctx.db.mutation.updateCartItem(
+      return ctx.db.mutation.updateCartItem(
         {
           where: { id: existingCartItem.id },
           data: { quantity: existingCartItem.quantity + 1 }
@@ -224,7 +230,7 @@ const Mutations = {
       );
     }
     // if it's not, create a fresh item for that user
-    return await ctx.db.mutation.createCartItem({
+    return ctx.db.mutation.createCartItem({
       data: {
         user: {
           connect: { id: userId }
@@ -274,7 +280,7 @@ const Mutations = {
         cart {
           id
           quantity
-          item { title price id description image }
+          item { title price id description image largeImage }
         }}`
     );
     // 2. recalculate the order total price (to bypass any front-end hacking)
@@ -291,9 +297,34 @@ const Mutations = {
       // can add a description -> look at the stripe docs
     });
     // 4. Convert the CartItems to OrderItems
+    const orderItems = user.cart.map(cartItem => {
+      const orderItem = {
+        ...cartItem.item,
+        quantity: cartItem.quantity,
+        user: { connect: { id: userId } }
+      };
+      delete orderItem.id;
+      return orderItem;
+    });
+
     // 5. Create the Order
+    const order = await ctx.db.mutation.createOrder({
+      data: {
+        total: charge.amount,
+        charge: charge.id,
+        items: { create: orderItems }, // yes, we can do this on the fly!
+        user: { connect: { id: userId } }
+      }
+    });
     // 6. Clean up - clear the user's cart, delete cartItems
+    const cartItemIds = user.cart.map(cartItem => cartItem.id);
+    await ctx.db.mutation.deleteManyCartItems({
+      where: {
+        id_in: cartItemIds
+      }
+    });
     // 7. Return the Order to the client
+    return order;
   }
 };
 
