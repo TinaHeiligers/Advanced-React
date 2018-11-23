@@ -32,6 +32,7 @@ function totalItems(cart) {
 
 class TakeMyMoney extends Component {
   onToken = async (res, createOrder) => {
+    NProgress.start();
     console.log("On Token Called!");
     console.log("The token id is:", res.id);
     // manually call the mutation once we have the Stripe token
@@ -40,7 +41,13 @@ class TakeMyMoney extends Component {
         token: res.id
       }
     }).catch(err => alert(err.message));
-    console.log(order);
+    console.log("ORDER:", order);
+    Router.push({
+      pathname: "/order",
+      query: {
+        id: order.data.createOrder.id
+      }
+    });
   };
   render() {
     return (
