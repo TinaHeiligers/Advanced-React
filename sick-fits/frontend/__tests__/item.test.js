@@ -1,5 +1,6 @@
 import ItemComponent from "../components/Item";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
+import toJSON from "enzyme-to-json";
 
 const fakeItem = {
   id: "ABC123",
@@ -37,5 +38,12 @@ describe("<Item />", () => {
     expect(buttonList.find("Link").exists()).toBe(true);
     expect(buttonList.find("AddToCart").exists()).toBe(true);
     expect(buttonList.find("DeleteItem").exists()).toBe(true);
+  });
+});
+
+describe("<Item /> as snapshot", () => {
+  it("renders and matches the snapshot", () => {
+    const wrapper = shallow(<ItemComponent item={fakeItem} />);
+    expect(toJSON(wrapper)).toMatchSnapshot();
   });
 });
