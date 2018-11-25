@@ -15,5 +15,5 @@ The best place to get help is in the #advanced-react slack room - there is a lin
 
 ## PROGRESS:
 
-TODO: 45 - Dealing with Deleted Items in CartItems
+TODO: 60 - More Apollo Query Testing
 
