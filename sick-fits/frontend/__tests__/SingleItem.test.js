@@ -20,7 +20,7 @@ describe("<SingleItem />", () => {
       }
     ];
     const wrapper = mount(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={mocks} addTypename={false}>
         <SingleItem id="123" />
       </MockedProvider>
     );
@@ -45,7 +45,7 @@ describe("<SingleItem />", () => {
       }
     ];
     const wrapper = mount(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={mocks} addTypename={false}>
         <SingleItem id="123" />
       </MockedProvider>
     );
