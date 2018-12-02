@@ -58,3 +58,11 @@ Array [
   </ul>,
 ]
 `;
+
+exports[`<Nav /> renders the amount of items in the cart 1`] = `
+<div
+  className="count CartCount__Dot-xxvp4g-1 kDZyEW"
+>
+  9
+</div>
+`;
