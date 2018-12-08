@@ -15,5 +15,5 @@ The best place to get help is in the #advanced-react slack room - there is a lin
 
 ## PROGRESS:
 
-TODO: 60 - More Apollo Query Testing
+TODO: 62 - More Apollo Query Testing
 
