@@ -119,8 +119,5 @@
       }
     ]
   },
-  "plugins": [
-    // "html",
-    "prettier"
-  ]
+  "plugins": ["prettier"]
 }
