@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { Mutation } from "react-apollo";
 import NavStyles from "./styles/NavStyles";
@@ -14,7 +15,7 @@ const Nav = () => (
           <a>Shop</a>
         </Link>
         {me && (
-          <>
+          <React.Fragment>
             <Link href="/sell">
               <a>Sell</a>
             </Link>
@@ -38,7 +39,7 @@ const Nav = () => (
                 </button>
               )}
             </Mutation>
-          </>
+          </React.Fragment>
         )}
         {!me && (
           <Link href="/signup">
