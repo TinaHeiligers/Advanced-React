@@ -230,16 +230,19 @@ const Mutations = {
       );
     }
     // if it's not, create a fresh item for that user
-    return ctx.db.mutation.createCartItem({
-      data: {
-        user: {
-          connect: { id: userId }
-        },
-        item: {
-          connect: { id: args.id }
+    return ctx.db.mutation.createCartItem(
+      {
+        data: {
+          user: {
+            connect: { id: userId }
+          },
+          item: {
+            connect: { id: args.id }
+          }
         }
-      }
-    });
+      },
+      info
+    );
   },
   async removeFromCart(parent, args, ctx, info) {
     // 1. Find the cart item
