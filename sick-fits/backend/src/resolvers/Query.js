@@ -13,12 +13,13 @@ const Query = {
     if (!ctx.request.userId) {
       return null;
     }
-    return ctx.db.query.user(
+    const user = ctx.db.query.user(
       {
         where: { id: ctx.request.userId }
       },
       info
     );
+    return user;
   },
   async users(parent, args, ctx, info) {
     // 1. check if they are logged in
